@@ -1,5 +1,7 @@
 {
   "name": "face-auth",
+  "description": "Example of user authentication with face recognition using Face API.",
+  "author": "Kajetan Swiatek",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
