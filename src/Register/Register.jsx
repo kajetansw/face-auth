@@ -60,6 +60,7 @@ export default class Register extends Component {
           width="500" 
           height="350"
         ></canvas>
+        <button onClick={this.props.onRegister}>REGISTER</button>
       </React.Fragment>
     );
   }

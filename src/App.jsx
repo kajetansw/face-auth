@@ -12,7 +12,8 @@ import './App.css';
 export default class App extends Component {
   state = {
     faceSnapshots: [],
-    learningModelsLoaded: false
+    learningModelsLoaded: false,
+    faceMatcher: null
   };
 
   learningModelsLoaded = false;
@@ -36,6 +37,35 @@ export default class App extends Component {
     ]).then(() => this.setState({ learningModelsLoaded: true }));
   }
 
+  loadLabeledFaceDescriptorsFromSnapshots = async () => {
+    const descriptions = [];
+    for (const snapshot of this.state.faceSnapshots) {
+      const imgEl = await faceapi.fetchImage(snapshot);
+      const detections = await faceapi.detectSingleFace(imgEl)
+        .withFaceLandmarks()
+        .withFaceDescriptor();
+
+      descriptions.push(detections.descriptor);
+    }
+    return Promise.all([
+      new faceapi.LabeledFaceDescriptors('user', descriptions)
+    ]);
+  }
+
+  createFaceMatcher = async () => {
+    const labeledFaceDescriptors = await this.loadLabeledFaceDescriptorsFromSnapshots();
+    console.log(labeledFaceDescriptors);
+    
+    const levelOfConfidence = 0.6;
+    return new faceapi.FaceMatcher(labeledFaceDescriptors, levelOfConfidence);
+  }
+
+  updateFaceMatcher = () => {
+    this.createFaceMatcher().then(faceMatcher => 
+      this.setState({ faceMatcher })
+    );
+  }
+
   render() {
     return (
       <BrowserRouter>
@@ -49,7 +79,10 @@ export default class App extends Component {
 
         <Switch>
           <Route path="/register">
-            <Register onAddSnapshot={this.handleAddFaceSnapshot}/>
+            <Register 
+              onAddSnapshot={this.handleAddFaceSnapshot}
+              onRegister={this.updateFaceMatcher}
+            />
           </Route>
           <Route path="/login">
             <Login />
