@@ -42,7 +42,7 @@ export default class Register extends Component {
     const canvasContext = canvasEl.getContext('2d');
     canvasContext.drawImage(this.videoRef.current, 0.0, 0.0, canvasEl.width, canvasEl.height);
 
-    this.props.onAddImage(canvasEl.toDataURL('image/jpg'));
+    this.props.onAddSnapshot(canvasEl.toDataURL('image/jpg'));
   }
 
   render() {

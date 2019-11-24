@@ -4,18 +4,18 @@ import { BrowserRouter, Link, Switch, Route } from 'react-router-dom';
 import Register from './Register/Register';
 import Login from './Login/Login';
 import Home from './Home/Home';
-import SampleFaceImages from './SampleFaceImages/SampleFaceImages';
+import FaceSnapshots from './FaceSnapshots/FaceSnapshots';
 
 import './App.css';
 
 export default class App extends Component {
   state = {
-    faceImages: []
+    faceSnapshots: []
   };
 
-  handleAddFaceImage = (newImage) => {
+  handleAddFaceSnapshot = (newSnapshot) => {
     this.setState((prevState, props) => {
-      return { faceImages: [...prevState.faceImages, newImage] };
+      return { faceSnapshots: [...prevState.faceSnapshots, newSnapshot] };
     });
   }
 
@@ -27,11 +27,11 @@ export default class App extends Component {
           <Link to="/login">Login</Link>
         </nav>
 
-        <SampleFaceImages faceImages={this.state.faceImages}/>
+        <FaceSnapshots snapshots={this.state.faceSnapshots}/>
 
         <Switch>
           <Route path="/register">
-            <Register onAddImage={this.handleAddFaceImage}/>
+            <Register onAddSnapshot={this.handleAddFaceSnapshot}/>
           </Route>
           <Route path="/login">
             <Login />
