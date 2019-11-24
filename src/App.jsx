@@ -9,6 +9,16 @@ import SampleFaceImages from './SampleFaceImages/SampleFaceImages';
 import './App.css';
 
 export default class App extends Component {
+  state = {
+    faceImages: []
+  };
+
+  handleAddFaceImage = (newImage) => {
+    this.setState((prevState, props) => {
+      return { faceImages: [...prevState.faceImages, newImage] };
+    });
+  }
+
   render() {
     return (
       <BrowserRouter>
@@ -17,11 +27,11 @@ export default class App extends Component {
           <Link to="/login">Login</Link>
         </nav>
 
-        <SampleFaceImages />
+        <SampleFaceImages faceImages={this.state.faceImages}/>
 
         <Switch>
           <Route path="/register">
-            <Register />
+            <Register onAddImage={this.handleAddFaceImage}/>
           </Route>
           <Route path="/login">
             <Login />

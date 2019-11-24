@@ -2,3 +2,7 @@
   border: 1px solid;
   height: 5rem;
 }
+
+.SampleFaceImages__image {
+  height: inherit;
+}
