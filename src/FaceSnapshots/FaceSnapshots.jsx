@@ -9,7 +9,8 @@ export default class FaceSnapshots extends Component {
         {this.props.snapshots.map((image, idx) => (
           <img 
             className="FaceSnapshots__image" 
-            src={image} 
+            src={image}
+            key={idx}
             alt={`Face sample number ${idx}`}
           />
         ))}
