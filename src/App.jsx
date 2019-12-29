@@ -52,8 +52,6 @@ export default class App extends Component {
 
   createFaceMatcher = async () => {
     const labeledFaceDescriptors = await this.loadLabeledFaceDescriptorsFromSnapshots();
-    console.log(labeledFaceDescriptors);
-    
     const levelOfConfidence = 0.6;
     return new faceapi.FaceMatcher(labeledFaceDescriptors, levelOfConfidence);
   }
@@ -62,6 +60,26 @@ export default class App extends Component {
     this.createFaceMatcher().then(faceMatcher => 
       this.setState({ faceMatcher })
     );
+  }
+
+  matchLoginToCollectedSnapshots = async (imgSrc) => {
+    const image = await faceapi.fetchImage(imgSrc);
+    const detection = await faceapi
+      .detectSingleFace(image)
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+    const displaySize = { width: image.width, height: image.height };
+
+    if (!!detection) {
+      const resizedDetections = faceapi.resizeResults([detection], displaySize);
+      const results = resizedDetections.map(d => 
+        this.state.faceMatcher.findBestMatch(d.descriptor)
+      );
+      const [firstResult] = results;
+      console.log('Logged in: ', firstResult.toString().startsWith('user'))
+    } else {
+      console.error('No face detected!');
+    }
   }
 
   render() {
@@ -84,7 +102,7 @@ export default class App extends Component {
             />
           </Route>
           <Route path="/login">
-            <Login />
+            <Login onLogin={this.matchLoginToCollectedSnapshots}/>
           </Route>
           <Route path="/">
             <Home />
