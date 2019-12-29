@@ -1,6 +1,8 @@
 import React, { Component, createRef } from 'react';
 
 import './Register.css';
+import { stopWebCam, startWebCam } from '../utils/web-cam';
+import { captureSnapshot } from '../utils/capture-snapshot';
 
 export default class Register extends Component {
   videoRef;
@@ -13,36 +15,15 @@ export default class Register extends Component {
   }
 
   componentDidMount() {
-    this.initializeWebCam();
+    startWebCam(this.videoRef.current);
   }
 
   componentWillUnmount() {
-    this.stopWebCam();
-  }
-
-  initializeWebCam = () => {
-    if (navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => this.videoRef.current.srcObject = stream)
-        .catch(console.error);
-    }
-  }
-
-  stopWebCam = () => {
-    const stream = this.videoRef.current.srcObject;
-    const tracks = stream.getTracks();
-
-    tracks.forEach(track => track.stop());
-
-    this.videoRef.current.srcObject = null;
+    stopWebCam(this.videoRef.current);
   }
 
   takeSnapshot = () => {
-    const canvasEl = this.canvasRef.current;
-    const canvasContext = canvasEl.getContext('2d');
-    canvasContext.drawImage(this.videoRef.current, 0.0, 0.0, canvasEl.width, canvasEl.height);
-
-    this.props.onAddSnapshot(canvasEl.toDataURL('image/jpg'));
+    this.props.onAddSnapshot(captureSnapshot(this.videoRef.current, this.canvasRef.current));
   }
 
   render() {
