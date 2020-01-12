@@ -9,8 +9,14 @@ import FaceSnapshots from './FaceSnapshots/FaceSnapshots';
 
 import './App.css';
 
-export default class App extends Component {
-  state = {
+type AppState = {
+  faceSnapshots: string[];
+  learningModelsLoaded: boolean;
+  faceMatcher: faceapi.FaceMatcher | null
+};
+
+export default class App extends Component<{}, AppState> {
+  state: AppState = {
     faceSnapshots: [],
     learningModelsLoaded: false,
     faceMatcher: null
@@ -20,7 +26,7 @@ export default class App extends Component {
     this.loadLearningModels();
   }
 
-  handleAddFaceSnapshot = (newSnapshot) => {
+  handleAddFaceSnapshot = (newSnapshot: string) => {
     this.setState((prevState, props) => {
       return { faceSnapshots: [...prevState.faceSnapshots, newSnapshot] };
     });
@@ -28,7 +34,7 @@ export default class App extends Component {
 
   loadLearningModels = () => {
     const path = process.env.PUBLIC_URL + '/models';
-    Promise.all([
+    return Promise.all([
       faceapi.nets.faceRecognitionNet.loadFromUri(path),
       faceapi.nets.faceLandmark68Net.loadFromUri(path),
       faceapi.nets.ssdMobilenetv1.loadFromUri(path)
@@ -36,14 +42,14 @@ export default class App extends Component {
   }
 
   loadLabeledFaceDescriptorsFromSnapshots = async () => {
-    const descriptions = [];
+    const descriptions: Float32Array[] = [];
     for (const snapshot of this.state.faceSnapshots) {
       const imgEl = await faceapi.fetchImage(snapshot);
       const detections = await faceapi.detectSingleFace(imgEl)
         .withFaceLandmarks()
         .withFaceDescriptor();
 
-      descriptions.push(detections.descriptor);
+      descriptions.push(detections!.descriptor);
     }
     return Promise.all([
       new faceapi.LabeledFaceDescriptors('user', descriptions)
@@ -62,7 +68,7 @@ export default class App extends Component {
     );
   }
 
-  matchLoginToCollectedSnapshots = async (imgSrc) => {
+  matchLoginToCollectedSnapshots = async (imgSrc: string) => {
     const image = await faceapi.fetchImage(imgSrc);
     const detection = await faceapi
       .detectSingleFace(image)
@@ -70,10 +76,10 @@ export default class App extends Component {
       .withFaceDescriptor();
     const displaySize = { width: image.width, height: image.height };
 
-    if (!!detection) {
+    if (!!detection && !!this.state.faceMatcher) {
       const resizedDetections = faceapi.resizeResults([detection], displaySize);
       const results = resizedDetections.map(d => 
-        this.state.faceMatcher.findBestMatch(d.descriptor)
+        this.state.faceMatcher!.findBestMatch(d.descriptor)
       );
       const [firstResult] = results;
       console.log('Logged in: ', firstResult.toString().startsWith('user'))

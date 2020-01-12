@@ -1,21 +1,26 @@
 import React, { Component, createRef } from 'react';
-
-import './Register.css';
 import { stopWebCam, startWebCam } from '../utils/web-cam';
 import { captureSnapshot } from '../utils/capture-snapshot';
 
-export default class Register extends Component {
-  videoRef;
-  canvasRef;
+import './Register.css';
 
-  constructor(props) {
+type RegisterProps = {
+  onAddSnapshot: (snapshot: string) => void;
+  onRegister: () => void;
+};
+
+export default class Register extends Component<RegisterProps> {
+  videoRef: React.RefObject<HTMLVideoElement>;
+  canvasRef: React.RefObject<HTMLCanvasElement>;
+
+  constructor(props: RegisterProps) {
     super(props);
     this.videoRef = createRef();
     this.canvasRef = createRef();
   }
 
   componentDidMount() {
-    startWebCam(this.videoRef.current);
+    startWebCam(this.videoRef!.current);
   }
 
   componentWillUnmount() {

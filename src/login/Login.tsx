@@ -1,14 +1,18 @@
 import React, { Component, createRef } from 'react';
-
-import './Login.css';
 import { startWebCam, stopWebCam } from '../utils/web-cam';
 import { captureSnapshot } from '../utils/capture-snapshot';
 
-export default class Login extends Component {
-  videoRef;
-  canvasRef;
+import './Login.css';
 
-  constructor(props) {
+type LoginProps = {
+  onLogin: (snapshot: string) => Promise<void>;
+};
+
+export default class Login extends Component<LoginProps> {
+  videoRef: React.RefObject<HTMLVideoElement>;
+  canvasRef: React.RefObject<HTMLCanvasElement>;
+
+  constructor(props: LoginProps) {
     super(props);
     this.videoRef = createRef();
     this.canvasRef = createRef();

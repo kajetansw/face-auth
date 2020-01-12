@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 
 import './FaceSnapshots.css';
 
-export default class FaceSnapshots extends Component {
+type FaceSnapshotsProps = {
+  snapshots: string[];
+};
+
+export default class FaceSnapshots extends Component<FaceSnapshotsProps> {
   render() {
     return (
       <div className="FaceSnapshots__container">
